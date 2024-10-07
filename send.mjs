@@ -1,0 +1,57 @@
+/**
+ * @module write
+ * Writes a data point to InfluxDB using the Javascript client library with Node.js.
+ **/
+
+import 'dotenv/config'
+import { InfluxDB, Point } from '@influxdata/influxdb-client'
+import request from 'request'
+
+/** Environment variables **/
+const url = process.env.INFLUX_URL
+const token = process.env.INFLUX_TOKEN
+const org = process.env.INFLUX_ORG
+const bucket = process.env.INFLUX_BUCKET
+
+/**
+ * Instantiate the InfluxDB client
+ * with a configuration object.
+ **/
+const influxDB = new InfluxDB({ url, token })
+
+/**
+ * Create a write client from the getWriteApi method.
+ * Provide your `org` and `bucket`.
+ **/
+const writeApi = influxDB.getWriteApi(org, bucket)
+
+request('http://192.168.12.243:8085/items', (error, response, body) => {
+    if (error) {
+        console.error(error)
+        return
+    }
+
+    const { temp_external, temp_sensor } = JSON.parse(body)
+
+
+    /**
+     * Create a point and write it to the buffer.
+     **/
+    const point = new Point('temperature')
+        .tag('vessel', 'fv_1')
+        .floatField('internal', temp_external)
+        .floatField('ambient', temp_sensor)
+
+    writeApi.writePoint(point)
+
+    /**
+     * Flush pending writes and close writeApi.
+     **/
+    writeApi.close().then(() => {
+        console.log('Write successful', {
+            internal: temp_external,
+            ambient: temp_sensor
+        })
+    })
+})
+
