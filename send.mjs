@@ -12,6 +12,7 @@ const url = process.env.INFLUX_URL
 const token = process.env.INFLUX_TOKEN
 const org = process.env.INFLUX_ORG
 const bucket = process.env.INFLUX_BUCKET
+const apiUrl = process.env.API_URL
 
 /**
  * Instantiate the InfluxDB client
@@ -25,7 +26,7 @@ const influxDB = new InfluxDB({ url, token })
  **/
 const writeApi = influxDB.getWriteApi(org, bucket)
 
-request('http://192.168.12.243:8085/items', (error, response, body) => {
+request(apiUrl, (error, response, body) => {
     if (error) {
         console.error(error)
         return
