@@ -15,6 +15,7 @@ const org = process.env.INFLUX_ORG
 const bucket = process.env.INFLUX_BUCKET
 const apiUrl = process.env.API_URL
 
+
 /**
  * Instantiate the InfluxDB client
  * with a configuration object.
@@ -34,8 +35,9 @@ cron.schedule('* * * * *', () => {
             return
         }
 
-        const {temp_external, temp_sensor} = JSON.parse(body)
+        let {temp_external, temp_sensor} = JSON.parse(body)
 
+        temp_external = parseFloat(temp_external) - 2.5 // calibration offset to ensure the temp matches the inkbird reading
 
         /**
          * Create a point and write it to the buffer.
