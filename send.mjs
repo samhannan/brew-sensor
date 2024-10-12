@@ -37,7 +37,7 @@ cron.schedule('* * * * *', () => {
 
         let {temp_external, temp_sensor} = JSON.parse(body)
 
-        temp_external = parseFloat(temp_external) - 2.5 // calibration offset to ensure the temp matches the inkbird reading
+        temp_external = parseFloat(temp_external) - 2.2 // calibration offset to ensure the temp matches the inkbird reading
 
         /**
          * Create a point and write it to the buffer.
